@@ -1,7 +1,35 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useMemo} from "react";
 
 const TheLeafMansion = () => {
+  const types = useMemo(() => [{
+      id: "1",
+      name: "27/60"
+    },
+    {
+      id: "2",
+      name: "33/72"
+    },
+    {
+      id: "3",
+      name: "45/98"
+    },
+  ], []);
+
   
+
+  const payments = useMemo(() => [{
+      id: "1",
+      name: "Kas Keras"
+    },
+    {
+      id: "2",
+      name: "HHIT"
+    },
+    {
+      id: "3",
+      name: "BRI"
+    },
+  ], []);
 
   const instalment = [
     {id:"1", paymentsId:"1", name:"1 Tahun", value:1},
@@ -16,8 +44,12 @@ const TheLeafMansion = () => {
   const [hargaJual, setHargaJual] = useState();
   const [payment, setPayment] = useState([]);
   const [pilihCicilan, setPilihCicilan] = useState([]);
-
-
+  const [hargaBeli, setHargaBeli] = useState();
+  const [textCicilan, setTextCicilan] = useState();
+  const [dp, setDp] = useState();
+  const [cicilDp, setCicilDp] = useState();
+  const [bunga, setBunga] = useState();
+  const [tc, setTc] = useState();
 
   const handleUnit = (e) => {
     e.target.value === "27/60" ? setHargaJual(220000000) : e.target.value === "33/72" ? setHargaJual(285000000) : e.target.value === "45/98" ? setHargaJual(350000000) : setHargaJual("No Price")
@@ -26,12 +58,17 @@ const TheLeafMansion = () => {
   const handleCicilan = (id) => {
     const dc = instalment.filter(x => x.paymentsId === id)
     setPilihCicilan(dc)
+    setHargaBeli(id === "1" ? hargaJual / (1 + (6 / 100)) : id === "2" ? hargaJual / (1 + (6 / 100)) : id === "3" ? hargaJual / 1 : 0);
+    setTextCicilan(id === "1"?"Kas Keras": id === "2"?"HHIT": id === "3"?"BRI": "");
+    setDp(id === "1" ? 5 / 100 : id === "2" ? 33.333333333 / 100 : 0);
+    setCicilDp(id === "1" ? 3 : id === "2" ? 1 : id === "3" ? 6 : 0);
+    setBunga(id === "1" ? 0 : id === "2" ? 6/100 : id === "3" ? 8.75/100 : 0);
+    setTc(id === "1" ? "Dicicil 1 Tahun" : id === "2" ? "Max 5 Tahun" : id === "3" ? "5 Tahun Fix Interest, setelah itu float" : "");
   }
 
   const handleLamaCicilan = (e) => {
     console.log(e.target.value)
   }
-
 
   function numberWithCommas(x) {
     return x.toString().replace(/\B(?<!\.\d* )(?=(\d{3})+(?!\d))/g, ",");
@@ -44,37 +81,12 @@ const TheLeafMansion = () => {
     return x;
   }
   useEffect(() => {
-    const types = [{
-        id: "1",
-        name: "27/60"
-      },
-      {
-        id: "2",
-        name: "33/72"
-      },
-      {
-        id: "3",
-        name: "45/98"
-      },
-    ];
-
-    const payments = [{
-        id: "1",
-        name: "Kas Keras"
-      },
-      {
-        id: "2",
-        name: "HHIT"
-      },
-      {
-        id: "3",
-        name: "BRI"
-      },
-    ];
     setType(types);
     setPayment(payments);
+
+
     
-  },[])
+  },[payments, types])
   return (
     <div className="container-md p-5">
       <div className="mb-4">
@@ -146,7 +158,9 @@ const TheLeafMansion = () => {
                     type="text"
                     className="form-control grey"
                     id="inputPassword"
-                    value={100000}
+                    value = {
+                      hargaBeli ? `Rp ${numberWithCommas(Math.round(hargaBeli))}` : 0
+                    }
                     disabled
                   />
                 </div>
@@ -156,7 +170,7 @@ const TheLeafMansion = () => {
                     className="col-form-label label-diskon"
                   >
                     <span className="me-1 text-diskon">Diskon</span>
-                    <span className="text-value-diskon">5.88%</span>
+                    <span className="text-value-diskon">{hargaBeli !== 0 && hargaJual > hargaBeli ? (((hargaJual-hargaBeli)/hargaJual)*100).toFixed(2):0}%</span>
                   </label>
                 </div>
               </div>
@@ -187,7 +201,7 @@ const TheLeafMansion = () => {
         <div className="col-md-6">
           <div className="card card-detail card-cicilan">
             <div className="mt-4 text-wrapper d-flex justify-content-between">
-              <p>Cicilan BRI</p>
+              <p>Cicilan {textCicilan}</p>
               <p>Total DP</p>
             </div>
             <div className="mt-2 mb-2 text-wrapper d-flex justify-content-between">
@@ -200,21 +214,25 @@ const TheLeafMansion = () => {
               <div className="d-flex align-items-end">
                 <span className="text-rp">Rp</span>
                 <span className="text-price">
-                  {numberWithCommas(Math.round(1000000))}
+                  {
+                    numberWithCommas(Math.round(handleNan(dp * hargaBeli)))
+                  }
                 </span>
               </div>
             </div>
             <hr />
             <div className="text-wrapper d-flex justify-content-between">
               <p>Lama Cicilan DP</p>
-              <p className="text-bold">5 Tahun</p>
+              <p className="text-bold">{cicilDp} Tahun</p>
             </div>
             <hr />
             <div className="text-wrapper d-flex justify-content-between">
               <p>Cicilan DP</p>
               <div className="d-flex">
                 <p className="text-bold">
-                  Rp {numberWithCommas(Math.round(100000))}
+                  Rp {
+                    numberWithCommas(Math.round(handleNan(((dp * hargaBeli) / cicilDp) / 12)))
+                  }
                 </p>
                 <p> /bulan</p>
               </div>
@@ -223,18 +241,20 @@ const TheLeafMansion = () => {
             <div className="text-wrapper d-flex justify-content-between">
               <p>Plafon Cicilan</p>
               <p className="text-bold">
-                Rp {numberWithCommas(Math.round(100000))}
+                Rp {
+                  numberWithCommas(Math.round(handleNan(hargaBeli - (dp * hargaBeli))))
+                }
               </p>
             </div>
             <hr />
             <div className="text-wrapper d-flex justify-content-between">
               <p>Bunga Cicilan</p>
-              <p className="text-bold">%</p>
+              <p className="text-bold">{handleNan(bunga * 100)}%</p>
             </div>
             <hr />
             <div className="text-wrapper d-flex">
               <p className="text-bold">Keterangan:</p>
-              <p className="ms-1">tc</p>
+              <p className="ms-1">{tc}</p>
             </div>
           </div>
         </div>
