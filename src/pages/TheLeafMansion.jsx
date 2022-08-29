@@ -55,7 +55,7 @@ const TheLeafMansion = () => {
     setType(types);
     setPayment(payments);
     
-  },[])
+  },[types, payments])
   return (
     <div className="container-md p-5">
       <div className="mb-4">
