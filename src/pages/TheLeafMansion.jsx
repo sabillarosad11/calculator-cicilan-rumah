@@ -1,17 +1,7 @@
 import React, {useState, useEffect} from "react";
 
 const TheLeafMansion = () => {
-  const types = [
-    { id: "1", name: "27/60" },
-    { id: "2", name: "33/72" },
-    { id: "3", name: "45/98" },
-  ];
-
-  const payments = [
-    { id: "1", name: "Kas Keras" },
-    { id: "2", name: "HHIT" },
-    { id: "3", name: "BRI" },
-  ];
+  
 
   const instalment = [
     {id:"1", paymentsId:"1", name:"1 Tahun", value:1},
@@ -26,6 +16,8 @@ const TheLeafMansion = () => {
   const [hargaJual, setHargaJual] = useState();
   const [payment, setPayment] = useState([]);
   const [pilihCicilan, setPilihCicilan] = useState([]);
+
+
 
   const handleUnit = (e) => {
     e.target.value === "27/60" ? setHargaJual(220000000) : e.target.value === "33/72" ? setHargaJual(285000000) : e.target.value === "45/98" ? setHargaJual(350000000) : setHargaJual("No Price")
@@ -52,10 +44,37 @@ const TheLeafMansion = () => {
     return x;
   }
   useEffect(() => {
+    const types = [{
+        id: "1",
+        name: "27/60"
+      },
+      {
+        id: "2",
+        name: "33/72"
+      },
+      {
+        id: "3",
+        name: "45/98"
+      },
+    ];
+
+    const payments = [{
+        id: "1",
+        name: "Kas Keras"
+      },
+      {
+        id: "2",
+        name: "HHIT"
+      },
+      {
+        id: "3",
+        name: "BRI"
+      },
+    ];
     setType(types);
     setPayment(payments);
     
-  },[types, payments])
+  },[])
   return (
     <div className="container-md p-5">
       <div className="mb-4">
