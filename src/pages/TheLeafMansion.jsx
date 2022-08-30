@@ -50,6 +50,8 @@ const TheLeafMansion = () => {
   const [cicilDp, setCicilDp] = useState();
   const [bunga, setBunga] = useState();
   const [tc, setTc] = useState();
+  const [lamaCicilan, setLamaCicilan] = useState();
+  const [cicilan, setCicilan] = useState();
 
   const handleUnit = (e) => {
     e.target.value === "27/60" ? setHargaJual(220000000) : e.target.value === "33/72" ? setHargaJual(285000000) : e.target.value === "45/98" ? setHargaJual(350000000) : setHargaJual("No Price")
@@ -67,7 +69,7 @@ const TheLeafMansion = () => {
   }
 
   const handleLamaCicilan = (e) => {
-    console.log(e.target.value)
+    setLamaCicilan(e.target.value)
   }
 
   function numberWithCommas(x) {
@@ -84,9 +86,17 @@ const TheLeafMansion = () => {
     setType(types);
     setPayment(payments);
 
-
-    
-  },[payments, types])
+    let r = (bunga * 100) / 12;
+    let plafonCicilan = Math.round(hargaBeli - dp * hargaBeli);
+    let n = lamaCicilan * 12
+    // console.log('lamaCicilan',lamaCicilan)
+    // console.log('plafonCicilan', plafonCicilan)
+    // console.log('r', r)
+    // console.log('n', n)
+    r === 0 ?
+      setCicilan(plafonCicilan / n) :
+      setCicilan(plafonCicilan * (((r / 100) * (1 + (r / 100))) ^ n) / ((1 + (r / 100)) ^ (n - 1)));
+  },[payments, types, lamaCicilan, bunga, dp, hargaBeli])
   return (
     <div className="container-md p-5">
       <div className="mb-4">
@@ -208,7 +218,9 @@ const TheLeafMansion = () => {
               <div className="d-flex align-items-end">
                 <span className="text-rp">Rp</span>
                 <span className="text-price">
-                  {numberWithCommas(Math.round(handleNan(10000)))}
+                  {
+                    numberWithCommas(Math.round(handleNan(cicilan)))
+                  }
                 </span>
               </div>
               <div className="d-flex align-items-end">
